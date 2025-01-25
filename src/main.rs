@@ -3,6 +3,8 @@ use bevy::prelude::*;
 pub mod alien;
 pub mod game;
 pub mod resolution;
+pub mod projectile;
+pub mod player;
 
 fn main() {
     App::new()

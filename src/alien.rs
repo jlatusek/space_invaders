@@ -6,10 +6,8 @@ pub struct AlienPlugin;
 
 impl Plugin for AlienPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_aliens).add_systems(
-            Update,
-            update_aliens, //, manage_alien_logic),
-        );
+        app.add_systems(Startup, setup_aliens)
+            .add_systems(Update, (update_aliens, manage_alien_logic));
     }
 }
 
@@ -92,6 +90,32 @@ fn update_aliens(
         //if the aliens have made it out of the bottom of the screen we have lost the game and should reset
         if transform.translation.y < -resolution.screen_dimensions.y * 0.5 {
             alien_manager.reset = true;
+        }
+    }
+}
+
+fn manage_alien_logic(
+    mut commands: Commands,
+    mut alien_query: Query<(Entity, &mut Alien, &mut Transform)>,
+    mut alien_manager: ResMut<AlienManager>,
+) {
+    if alien_manager.shift_aliens_down {
+        alien_manager.shift_aliens_down = false;
+        alien_manager.direction *= -1.;
+        for (_entity, _alien, mut transofrm) in alien_query.iter_mut() {
+            transofrm.translation.x += alien_manager.dist_from_boundary;
+            transofrm.translation.y -= ALIEN_SHIFT_AMOUNT;
+        }
+    }
+    if alien_manager.reset {
+        alien_manager.reset = false;
+        alien_manager.direction = 1.;
+        for (entity, mut alien, mut transform) in alien_query.iter_mut() {
+            transform.translation = alien.original_position;
+            if alien.dead {
+                alien.dead = false;
+                commands.entity(entity).remove::<Dead>();
+            }
         }
     }
 }
