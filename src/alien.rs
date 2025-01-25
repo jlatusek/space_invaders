@@ -36,8 +36,9 @@ const ALIEN_SHIFT_AMOUNT: f32 = 32.;
 
 fn setup_aliens(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
     resolution: Res<resolution::Resolution>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     commands.insert_resource(AlienManager {
         reset: false,
@@ -45,7 +46,9 @@ fn setup_aliens(
         shift_aliens_down: false,
         direction: 1.,
     });
-    let alien_texture: Handle<Image> = asset_server.load("alien.png");
+    let alien_circle = Circle::new(5.);
+    let alien_shape = meshes.add(alien_circle);
+    let color = Color::hsl(360., 0.95, 0.7);
     for x in 0..WIDTH {
         for y in 0..HEIGHT {
             let position = Vec3::new(x as f32 * SPACING, y as f32 * SPACING, 0.)
@@ -53,7 +56,8 @@ fn setup_aliens(
                 -(Vec3::Y * HEIGHT as f32 * SPACING * 1.0 ) // Displace the aliens below the x axis so that we can displace them to the top the screen in the next line
                 +(Vec3::Y * resolution.screen_dimensions.y * 0.5); // Displace the aliens to the top of the screen
             commands.spawn((
-                Sprite::from_image(alien_texture.clone()),
+                Mesh2d(alien_shape.clone()),
+                MeshMaterial2d(materials.add(color)),
                 Transform::from_translation(position)
                     .with_scale(Vec3::splat(resolution.pixel_ratio)),
                 Alien {
