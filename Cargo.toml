@@ -1,0 +1,23 @@
+[package]
+name = "space_invaders"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.15.1"
+bevy_internal = "0.15.1"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[features]
+default = ["wayland"]
+
+# Wayland display server support
+wayland = ["bevy_internal/wayland"]
+
+# X11 display server support
+x11 = ["bevy_internal/x11"]
