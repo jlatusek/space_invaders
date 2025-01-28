@@ -20,6 +20,7 @@ cargo build --release --target wasm32-unknown-unknown
 ```bash
 wasm-bindgen --out-dir ./webbuild/out/ --target web ./target/wasm32-unknown-unknown/release/space_invaders.wasm
 cp -r assets ./webbuild/
+cp -r assets_imported ./webbuild/
 ```
 
 ## Modify index.html
@@ -31,6 +32,12 @@ In `webbuild/index.html`, replace `/out/space_invaders.js` with `/out/<PKG_NAME>
 ```bash
 npx serve webbuild  # then navigate to http://localhost:3000
 ```
+or
+
+``` sh
+python3 -m http.server --directory webbuild
+```
+
 ## Package the project
 
 ```bash

@@ -21,7 +21,7 @@ opt-level = 1
 opt-level = 3
 
 [features]
-default = ["wayland", "asset_processor", "file_watcher"]
+default = ["wayland"]
 
 # Wayland display server support
 wayland = ["bevy_internal/wayland"]
@@ -31,7 +31,7 @@ x11 = ["bevy_internal/x11"]
 
 asset_processor = ["bevy_asset/asset_processor"]
 file_watcher = ["bevy_asset/file_watcher"]
-webgpu = ["bevy_internal/webgpu"]
+webgl2 = ["bevy_internal/webgl"]
 
 [package.metadata.space_invaders]
 wasm = true

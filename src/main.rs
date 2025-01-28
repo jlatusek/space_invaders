@@ -19,7 +19,13 @@ fn main() {
                     }),
                     ..Default::default()
                 })
-                .set(ImagePlugin::default_nearest()),
+                .set(ImagePlugin::default_nearest())
+                .set(AssetPlugin {
+                    mode: AssetMode::Processed,
+                    file_path: "assets".to_string(),
+                    processed_file_path: "assets_imported".to_string(),
+                    ..Default::default()
+                }),
             game::GamePlugin,
         ))
         .run();
