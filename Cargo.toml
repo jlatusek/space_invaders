@@ -5,7 +5,14 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.15.1"
+bevy_asset = { version = "0.15.1", features = ["asset_processor"] }
 bevy_internal = "0.15.1"
+
+[dev-dependencies]
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen = { version = "0.2" }
+web-sys = { version = "0.3", features = ["Window"] }
 
 [profile.dev]
 opt-level = 1
@@ -14,10 +21,17 @@ opt-level = 1
 opt-level = 3
 
 [features]
-default = ["wayland"]
+default = ["wayland", "asset_processor", "file_watcher"]
 
 # Wayland display server support
 wayland = ["bevy_internal/wayland"]
 
 # X11 display server support
 x11 = ["bevy_internal/x11"]
+
+asset_processor = ["bevy_asset/asset_processor"]
+file_watcher = ["bevy_asset/file_watcher"]
+webgpu = ["bevy_internal/webgpu"]
+
+[package.metadata.space_invaders]
+wasm = true
