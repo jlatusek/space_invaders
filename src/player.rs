@@ -1,12 +1,30 @@
 use bevy::prelude::*;
 
+use crate::game;
 use crate::projectile;
 use crate::resolution;
+
 pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup_player)
-            .add_systems(Update, update_player);
+            .add_systems(Update, update_player)
+            .add_event::<PlayerEvent>();
+    }
+}
+
+#[derive(Event)]
+pub struct PlayerEvent {
+    pub move_direction: i8,
+    pub shoot: bool,
+}
+
+impl Default for PlayerEvent {
+    fn default() -> Self {
+        PlayerEvent {
+            move_direction: 0,
+            shoot: false,
+        }
     }
 }
 
@@ -17,13 +35,12 @@ struct Player {
 }
 
 fn setup_player(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    assets: Res<game::SIAssetsSource>,
     resolution: Res<resolution::Resolution>,
+    mut commands: Commands,
 ) {
-    let player_image: Handle<Image> = asset_server.load("player.png");
     commands.spawn((
-        Sprite::from_image(player_image),
+        Sprite::from_image(assets.player_image.clone()),
         Transform::from_xyz(
             0.,
             -(resolution.screen_dimensions.y * 0.5) + (resolution.pixel_ratio * 5.0),
@@ -37,24 +54,23 @@ const SPEED: f32 = 200.;
 const BULLET_SPEED: f32 = 400.;
 const SHOOT_COOLDOWN: f32 = 0.5;
 fn update_player(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut player_query: Query<(&mut Player, &mut Transform)>,
-    time: Res<Time>,
-    keys: Res<ButtonInput<KeyCode>>,
+    assets: Res<game::SIAssetsSource>,
     resolution: Res<resolution::Resolution>,
+    time: Res<Time>,
+    mut commands: Commands,
+    mut player_event_reader: EventReader<PlayerEvent>,
+    mut player_query: Query<(&mut Player, &mut Transform)>,
 ) {
     //query for the only instance of the player
     let (mut player, mut transform) = player_query.single_mut();
 
     //the input which the player is pressing for the horizontal axis
     let mut horizontal = 0.;
+    let mut shoot = false;
 
-    if keys.pressed(KeyCode::KeyA) {
-        horizontal += -1.;
-    }
-    if keys.pressed(KeyCode::KeyD) {
-        horizontal += 1.;
+    for event in player_event_reader.read() {
+        horizontal += event.move_direction as f32;
+        shoot |= event.shoot;
     }
     //move player
     transform.translation.x += horizontal * time.delta_secs() * SPEED;
@@ -72,11 +88,10 @@ fn update_player(
 
     player.shoot_timer -= time.delta_secs();
 
-    if keys.pressed(KeyCode::Space) && player.shoot_timer <= 0. {
+    if shoot && player.shoot_timer <= 0. {
         player.shoot_timer = SHOOT_COOLDOWN;
-        let bullet_texture = asset_server.load("bullet.png");
         commands.spawn((
-            Sprite::from_image(bullet_texture),
+            Sprite::from_image(assets.bullet_image.clone()),
             Transform::from_translation(transform.translation)
                 .with_scale(Vec3::splat(resolution.pixel_ratio)),
             projectile::Projectile {
