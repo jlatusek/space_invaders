@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::alien;
+use crate::control;
 use crate::player;
 use crate::projectile;
 use crate::resolution;
@@ -13,6 +14,7 @@ impl Plugin for GamePlugin {
             alien::AlienPlugin,
             projectile::ProjectilePlugin,
             player::PlayerPlugin,
+            control::ControlPlugin,
         ))
         .add_systems(Startup, setup_scene);
     }
