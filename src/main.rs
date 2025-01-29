@@ -1,11 +1,13 @@
 use bevy::prelude::*;
 
 pub mod alien;
+pub mod control;
 pub mod game;
-pub mod resolution;
-pub mod projectile;
 pub mod player;
+pub mod projectile;
+pub mod resolution;
 
+#[cfg(any(feature = "wayland", feature = "x11"))]
 fn main() {
     App::new()
         .add_plugins((
@@ -28,5 +30,24 @@ fn main() {
                 }),
             game::GamePlugin,
         ))
+        .run();
+}
+
+#[cfg(not(any(feature = "wayland", feature = "x11")))]
+fn main() {
+    App::new()
+        .add_plugins(
+            DefaultPlugins.set((
+                RenderPlugin {
+                    render_creation: WgpuSettings {
+                        backends: None,
+                        ..default()
+                    }
+                    .into(),
+                    ..default()
+                },
+                game::GamePlugin,
+            )),
+        )
         .run();
 }

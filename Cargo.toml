@@ -21,7 +21,6 @@ opt-level = 1
 opt-level = 3
 
 [features]
-default = ["wayland"]
 
 # Wayland display server support
 wayland = ["bevy_internal/wayland"]
