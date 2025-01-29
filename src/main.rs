@@ -1,10 +1,11 @@
 use bevy::prelude::*;
 
 pub mod alien;
+pub mod control;
 pub mod game;
-pub mod resolution;
-pub mod projectile;
 pub mod player;
+pub mod projectile;
+pub mod resolution;
 
 fn main() {
     App::new()
