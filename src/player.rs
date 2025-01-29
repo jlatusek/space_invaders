@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::game;
 use crate::projectile;
 use crate::resolution;
 
@@ -34,13 +35,12 @@ struct Player {
 }
 
 fn setup_player(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    assets: Res<game::SIAssetsSource>,
     resolution: Res<resolution::Resolution>,
+    mut commands: Commands,
 ) {
-    let player_image: Handle<Image> = asset_server.load("player.png");
     commands.spawn((
-        Sprite::from_image(player_image),
+        Sprite::from_image(assets.player_image.clone()),
         Transform::from_xyz(
             0.,
             -(resolution.screen_dimensions.y * 0.5) + (resolution.pixel_ratio * 5.0),
@@ -54,7 +54,7 @@ const SPEED: f32 = 200.;
 const BULLET_SPEED: f32 = 400.;
 const SHOOT_COOLDOWN: f32 = 0.5;
 fn update_player(
-    asset_server: Res<AssetServer>,
+    assets: Res<game::SIAssetsSource>,
     resolution: Res<resolution::Resolution>,
     time: Res<Time>,
     mut commands: Commands,
@@ -90,9 +90,8 @@ fn update_player(
 
     if shoot && player.shoot_timer <= 0. {
         player.shoot_timer = SHOOT_COOLDOWN;
-        let bullet_texture = asset_server.load("bullet.png");
         commands.spawn((
-            Sprite::from_image(bullet_texture),
+            Sprite::from_image(assets.bullet_image.clone()),
             Transform::from_translation(transform.translation)
                 .with_scale(Vec3::splat(resolution.pixel_ratio)),
             projectile::Projectile {
