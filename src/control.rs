@@ -20,7 +20,7 @@ fn update_control_events(
     if keys.pressed(KeyCode::KeyD) || keys.pressed(KeyCode::ArrowRight) {
         player_event.move_direction += 1;
     }
-    if keys.pressed(KeyCode::Space){
+    if keys.pressed(KeyCode::Space) {
         player_event.shoot = true;
     }
     player_event_writter.send(player_event);
